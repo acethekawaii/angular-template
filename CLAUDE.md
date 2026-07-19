@@ -1,18 +1,6 @@
 # Claude Code Project Instructions
 
-## Required Project Rules
-
-Before making changes, read and follow:
-
-- `.claude/rules/angular-standards.md`
-- `.claude/rules/theming.md`
-- `.claude/rules/architecture.md`
-
-## When reviewing PRs
-
-Before reviewing a PR or running `/review`, read and follow:
-
-- `REVIEW.md`
+@AGENTS.md
 
 ## Skills
 
@@ -20,4 +8,4 @@ Project-specific skills are located in:
 
 - `.claude/skills`
 
-Use the relevant skill when the task matches the skill description. 
+Use the relevant skill when the task matches the skill description.

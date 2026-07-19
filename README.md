@@ -1,12 +1,12 @@
-# Frontend Boilerplate
+# Angular Boilerplate
 
-Internal Angular frontend template. Clone at the start of every new frontend project.
+A GitHub template repository for Angular SPAs. Use it to bootstrap every new frontend project.
 
 ## Use cases
 
 Built for:
 
-- internal admin dashboards
+- admin dashboards
 - data-heavy CRUD apps
 - MVPs / prototypes
 - any SPA needing PrimeNG + Tailwind
@@ -21,31 +21,39 @@ Not for: marketing sites, SSR-heavy sites, mobile-first PWAs.
 - Tailwind CSS v4 (+ `tailwindcss-primeui`)
 - TypeScript 5.9
 - Vitest
+- pnpm
 
 ## Quick start
 
+This is a **template repository** — don't clone it directly. Create a new repo from it:
+
+- GitHub UI: click **Use this template** → **Create a new repository**, or
+- GitHub CLI:
+
 ```bash
-git clone https://github.com/Geoplan-Philippines/frontend-boilerplate <new-project-name>
+gh repo create <new-project-name> --template <owner>/angular-boilerplate --private --clone
 cd <new-project-name>
-rm -rf .git && git init
-npm install
-npm start
+pnpm install
+pnpm start
 ```
 
 Post-clone checklist:
 
 - rename `name` in [package.json](package.json)
+- rename the `angular-boilerplate` project key (and its two `buildTarget` refs) in [angular.json](angular.json)
+- update `<title>` in [src/index.html](src/index.html)
 - update `apiBaseUrl` in [src/environments/environment.ts](src/environments/environment.ts) (dev) and [src/environments/environment.prod.ts](src/environments/environment.prod.ts) (prod)
 - update this README title + description
 - update brand colors in [src/app/app.preset.ts](src/app/app.preset.ts) and [src/styles.css](src/styles.css)
 - replace the sample image at [src/assets/images/](src/assets/images/) and the `<img>` in [src/app/app.html](src/app/app.html)
+- update the copyright holder in [LICENSE](LICENSE) if needed
 
 ## Scripts
 
-- `npm start` — dev server
-- `npm run build` — prod build
-- `npm run watch` — dev build, watch mode
-- `npm test` — Vitest
+- `pnpm start` — dev server
+- `pnpm build` — prod build
+- `pnpm watch` — dev build, watch mode
+- `pnpm test` — Vitest
 
 ## Structure
 
@@ -60,11 +68,13 @@ src/
     app.routes.ts     # top-level lazy routes
     app.preset.ts     # PrimeNG theme preset (brand colors)
   environments/        # environment.ts (dev, default) / environment.prod.ts, swapped via angular.json fileReplacements
-  assets/images/        # static images, served at /assets/**
-  styles.css            # Tailwind, fonts, CSS tokens
+  assets/images/       # static images, served at /assets/**
+  styles.css           # Tailwind, fonts, CSS tokens
 .claude/
-  rules/                # required reading for contributors + Claude Code
-  skills/               # project-specific Claude Code skills
+  rules/               # required reading for contributors + AI agents
+  skills/              # project-specific Claude Code skills
+AGENTS.md              # source of truth for AI coding agents (Codex, Claude Code, etc.)
+CLAUDE.md              # Claude Code entry point — imports AGENTS.md
 ```
 
 See [.claude/rules/architecture.md](.claude/rules/architecture.md) for the full feature-folder convention.
@@ -98,10 +108,19 @@ Highlights:
 - PrimeNG first, Tailwind second, custom CSS last
 - WCAG AA minimum, must pass AXE
 
+## AI-assisted development
+
+This repo is optimized for agentic development (Claude Code, Codex, etc.):
+
+- [AGENTS.md](AGENTS.md) is the single source of truth for AI agents — stack, commands, conventions, and pointers to the rules.
+- [CLAUDE.md](CLAUDE.md) imports `AGENTS.md` and adds Claude-specific config (skills).
+- `.claude/rules/` contains the enforceable coding standards both humans and agents follow.
+- `.claude/settings.json` ships with `bypassPermissions` enabled for autonomous agent runs — review it if you prefer approval prompts.
+
 ## Environments
 
 `apiBaseUrl` and flags live in [src/environments/environment.ts](src/environments/environment.ts) (dev, imported by default) and [src/environments/environment.prod.ts](src/environments/environment.prod.ts). Angular swaps them via `fileReplacements` in `angular.json`'s `production` build configuration.
 
 ## License
 
-Internal — Geoplan. Not for distribution.
+[MIT](LICENSE)
