@@ -1,125 +1,109 @@
-# Angular Boilerplate
+# angular-boilerplate
 
-A GitHub template repository for Angular SPAs. Use it to bootstrap every new frontend project.
+An opinionated Angular starter for admin dashboards, data-heavy CRUD apps, and MVPs.
 
-## Use cases
+Ships agent-ready for Claude Code, Cursor, and Codex: shared rules in `AGENTS.md`, the `unslop` skill, and MCP servers for both Angular and spartan/ui, so your AI tools follow current Angular 22 conventions instead of guessing at v16 ones.
 
-Built for:
+![Angular 22](https://img.shields.io/badge/Angular-22-DD0031?logo=angular&logoColor=white)
+![spartan/ui](https://img.shields.io/badge/spartan%2Fui-brain_%2B_helm-1F1F1F)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
+![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?logo=tailwindcss&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-testing-6E9F18?logo=vitest&logoColor=white)
+![pnpm](https://img.shields.io/badge/pnpm-package_manager-F69220?logo=pnpm&logoColor=white)
+![MIT](https://img.shields.io/badge/license-MIT-green)
 
-- admin dashboards
-- data-heavy CRUD apps
-- MVPs / prototypes
-- any SPA needing PrimeNG + Tailwind
+Every dependency is MIT. PrimeNG was dropped at v22 because it moved to a paid licence above small-team thresholds.
 
-Not for: marketing sites, SSR-heavy sites, mobile-first PWAs.
+## Use this template
 
-## Stack
-
-- Angular 21 (standalone, signals)
-- PrimeNG 21 (Nora-based custom preset) + PrimeIcons
-- `@primeuix/themes` (theme engine — see [Design system](#design-system))
-- Tailwind CSS v4 (+ `tailwindcss-primeui`)
-- TypeScript 5.9
-- Vitest
-- pnpm
-
-## Quick start
-
-This is a **template repository** — don't clone it directly. Create a new repo from it:
-
-- GitHub UI: click **Use this template** → **Create a new repository**, or
-- GitHub CLI:
+1. Click **Use this template**, then **Create a new repository** at the top of this repository.
+2. Clone your repository and start the dev server:
 
 ```bash
-gh repo create <new-project-name> --template <owner>/angular-boilerplate --private --clone
-cd <new-project-name>
+git clone https://github.com/<your-username>/<your-repo-name>.git
+cd <your-repo-name>
 pnpm install
 pnpm start
 ```
 
-Post-clone checklist:
+The welcome screen that loads is a smoke test. It renders the theme tokens, both fonts, and a row of spartan buttons, so you can confirm the setup works before writing anything. Delete it once your first feature exists.
 
-- rename `name` in [package.json](package.json)
-- rename the `angular-boilerplate` project key (and its two `buildTarget` refs) in [angular.json](angular.json)
-- update `<title>` in [src/index.html](src/index.html)
-- update `apiBaseUrl` in [src/environments/environment.ts](src/environments/environment.ts) (dev) and [src/environments/environment.prod.ts](src/environments/environment.prod.ts) (prod)
-- update this README title + description
-- update brand colors in [src/app/app.preset.ts](src/app/app.preset.ts) and [src/styles.css](src/styles.css)
-- replace the sample image at [src/assets/images/](src/assets/images/) and the `<img>` in [src/app/app.html](src/app/app.html)
-- update the copyright holder in [LICENSE](LICENSE) if needed
+> [!TIP]
+> **Outdated template?**
+> If this repository has not been updated in a while, feed this prompt into your AI coding assistant:
+> ```text
+> Update all project dependencies to their latest stable versions, including Angular.
+> Check peer ranges first: @angular/build pins the allowed TypeScript and Vitest versions,
+> and @spartan-ng/brain pins the allowed Angular range.
+> ```
+
+## After cloning
+
+1. **`AGENTS.md`**: fill in the `Product overview` section (what the app is, who uses it, what it does for them). Your AI tools read this first.
+2. **`src/styles.css`**: brand tokens. Hex belongs here and nowhere else. Read the warning in [Design tokens](#design-tokens) before renaming any of them.
+3. **`src/environments/`**: `apiBaseUrl` for dev and prod.
+4. **`package.json`**, **`angular.json`**, **`src/index.html`**, **`src/app/layout/header/header.html`**: replace the `angular-boilerplate` name. `angular.json` has the project key plus two `buildTarget` references.
+5. **`LICENSE`**: copyright holder.
+6. Delete `src/app/modules/welcome/` and its route in `src/app/app.routes.ts`, then start building.
+
+## What's wired up
+
+- `src/app/layout/`: header, sidebar, and `MainLayout`, already routed. `MainLayout` provides the skip link, the `<main>` landmark, and the `page-container` width wrapper, so pages do not repeat them
+- `src/app/app.config.ts`: router with `withComponentInputBinding()` (route params arrive as signal `input()`s) and `withInMemoryScrolling()`, plus `provideHttpClient(withFetch())`
+- `src/styles.css`: brand tokens, Tailwind v4 `@theme inline` mapping, and the spartan preset. Light scheme only
+- `src/app/shared/ui/`: spartan helm components vendored into the repo, imported through `@ui/<name>`
+- `tsconfig.json`: `@ui/*`, `@core/*`, and `@env/*` path aliases
+- Zoneless and OnPush by default. `zone.js` is not installed
+- `AGENTS.md`, `.claude/rules/`, `.claude/skills/`, `.mcp.json`: agent rules, the `unslop` writing skill, and the Angular and spartan MCP servers
 
 ## Scripts
 
-- `pnpm start` — dev server
-- `pnpm build` — prod build
-- `pnpm watch` — dev build, watch mode
-- `pnpm test` — Vitest
-
-## Structure
-
-```
-src/
-  app/
-    core/             # cross-cutting singletons (auth, interceptors, guards, types)
-    layout/           # app chrome: main-layout, header, sidebar
-    modules/          # feature folders, each with its own <feature>.routes.ts
-    shared/ui/        # reusable, feature-agnostic UI components
-    app.config.ts     # providers, router, PrimeNG theme
-    app.routes.ts     # top-level lazy routes
-    app.preset.ts     # PrimeNG theme preset (brand colors)
-  environments/        # environment.ts (dev, default) / environment.prod.ts, swapped via angular.json fileReplacements
-  assets/images/       # static images, served at /assets/**
-  styles.css           # Tailwind, fonts, CSS tokens
-.claude/
-  rules/               # required reading for contributors + AI agents
-  skills/              # project-specific Claude Code skills
-AGENTS.md              # source of truth for AI coding agents (Codex, Claude Code, etc.)
-CLAUDE.md              # Claude Code entry point — imports AGENTS.md
+```bash
+pnpm start    # dev server
+pnpm build    # production build
+pnpm watch    # dev build, watch mode
+pnpm test     # vitest
+pnpm verify   # build + test, the gate before calling work done
 ```
 
-See [.claude/rules/architecture.md](.claude/rules/architecture.md) for the full feature-folder convention.
+## Adding UI components
 
-## Design system
+```bash
+pnpm ng g @spartan-ng/cli:ui
+```
 
-**Tokens** — defined as CSS vars in [src/styles.css](src/styles.css), exposed to Tailwind via `@theme`. Examples: `bg-primary`, `text-heading`, `border-border`.
+Pick a component from the prompt. The CLI vendors its source into `src/app/shared/ui/` and registers a `@ui/<name>` path alias. Those files are yours, so restyle them in place rather than overriding them from outside. Config lives in `components.json`.
 
-**Fonts** — Poppins (headings, auto-applied to `h1`–`h6`), Work Sans (body, auto-applied to `body`, `button`, `input`, `textarea`, `select`).
+`@spartan-ng/brain` stays an npm dependency and supplies the behaviour and accessibility underneath. `@spartan-ng/cli` is a schematics collection with no executable, so it has to stay a devDependency. `pnpm dlx` cannot run it.
 
-**PrimeNG theme** — custom preset extending Nora, defined in [src/app/app.preset.ts](src/app/app.preset.ts) via `@primeuix/themes` (the current PrimeNG v21 theming package — `@primeng/themes` is the older/deprecated import path, do not use it). Brand colors live here. Keep hex values in sync with [src/styles.css](src/styles.css).
+## Design tokens
 
-**Layout** — `.main-container` utility in [src/styles.css](src/styles.css) for page-level max-width wrapper.
+Tokens live as CSS variables in `src/styles.css` and reach Tailwind through `@theme inline`.
+
+Their names follow the spartan and shadcn contract, because the vendored helm components read `--background`, `--primary`, `--muted`, `--accent`, `--border`, `--ring`, `--radius`, and the `--sidebar-*` set directly. Adding tokens is safe. Renaming one silently breaks every component that reads it.
+
+One trap worth knowing: `--secondary` and `--accent` are low-contrast surfaces in this contract, used for secondary buttons and hover states. They are not a second brand colour. The vivid accent sits in `--ring`.
+
+Fonts are Poppins for headings and Work Sans for body, loaded from Google Fonts in `src/index.html` and applied globally.
 
 ## Conventions
 
-Required reading before contributing:
+Read before contributing, human or agent:
 
 - [.claude/rules/angular-standards.md](.claude/rules/angular-standards.md)
 - [.claude/rules/architecture.md](.claude/rules/architecture.md)
 - [.claude/rules/theming.md](.claude/rules/theming.md)
 
-Highlights:
+The ones that bite most often:
 
-- standalone components only, no NgModules (standalone is the default in v20+, don't set it explicitly)
-- signals for state, `computed()` for derived state
-- `ChangeDetectionStrategy.OnPush` on every component
-- native control flow (`@if`, `@for`, `@switch`) — no `*ngIf` / `*ngFor`
-- `class`/`style` bindings — no `ngClass` / `ngStyle`
-- Reactive Forms only
-- PrimeNG first, Tailwind second, custom CSS last
+- Never set `changeDetection`. OnPush is the Angular 22 default, and `ChangeDetectionStrategy.Eager` opts a component out of it
+- The app is zoneless, so state has to flow through signals or the view will not update
+- Native control flow (`@if`, `@for`, `@switch`), always with `track`
+- `class` and `style` bindings, never `ngClass` or `ngStyle`
+- Feature folders under `src/app/modules/<feature>/`, lazy-loaded through their own `<feature>.routes.ts`
+- No hardcoded hex outside `src/styles.css`
 - WCAG AA minimum, must pass AXE
-
-## AI-assisted development
-
-This repo is optimized for agentic development (Claude Code, Codex, etc.):
-
-- [AGENTS.md](AGENTS.md) is the single source of truth for AI agents — stack, commands, conventions, and pointers to the rules.
-- [CLAUDE.md](CLAUDE.md) imports `AGENTS.md` and adds Claude-specific config (skills).
-- `.claude/rules/` contains the enforceable coding standards both humans and agents follow.
-- `.claude/settings.json` ships with `bypassPermissions` enabled for autonomous agent runs — review it if you prefer approval prompts.
-
-## Environments
-
-`apiBaseUrl` and flags live in [src/environments/environment.ts](src/environments/environment.ts) (dev, imported by default) and [src/environments/environment.prod.ts](src/environments/environment.prod.ts). Angular swaps them via `fileReplacements` in `angular.json`'s `production` build configuration.
+- A spec asserting only `toBeTruthy()` is not a test
 
 ## License
 

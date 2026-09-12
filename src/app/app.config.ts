@@ -1,21 +1,18 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 
 import { routes } from './app.routes';
-import { providePrimeNG } from 'primeng/config';
-import { AppPreset } from './app.preset';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes),
-    providePrimeNG({
-      theme: {
-        preset: AppPreset,
-        options: {
-          darkModeSelector: false
-        }
-      },
-    })
-  ]
+    provideHttpClient(withFetch()),
+    provideRouter(
+      routes,
+      // route params / query params arrive as signal `input()`s on the component
+      withComponentInputBinding(),
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled' }),
+    ),
+  ],
 };

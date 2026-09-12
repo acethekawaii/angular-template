@@ -1,28 +1,53 @@
-You must follow the project theme. The source of truth is:
+You must follow the project theme. The single source of truth is `src/styles.css`.
 
-- `src/app/app.preset.ts` — PrimeNG `AppPreset` (primary palette, color scheme)
-- `src/styles.css` — CSS variables + Tailwind `@theme` token mapping + fonts
+## How the theme is structured
+
+`src/styles.css` has three parts, in order:
+
+1. `:root` holds raw hex values. **This is the only file where hex literals belong.**
+2. `@theme inline` maps those CSS vars to Tailwind tokens (`--color-primary` gives you `bg-primary`, `text-primary`, `border-primary`, ...).
+3. `@layer base` applies global defaults (fonts, body background, heading styles).
+
+Token names follow the **spartan/shadcn contract**. Vendored helm components in
+`src/app/shared/ui/` read `--background`, `--foreground`, `--primary`, `--muted`,
+`--accent`, `--border`, `--ring`, `--radius` and the `--sidebar-*` set directly.
+Renaming or deleting one of those silently breaks every helm component. Add new tokens
+freely, rename existing ones only with a full sweep.
 
 ## Colors
 
-- Use Tailwind tokens from the `@theme` block in `src/styles.css`: `bg-primary`, `bg-primary-hover`, `text-primary-foreground`, `bg-secondary`, `text-body`, `text-heading`, `border-border`, `bg-background`, `bg-accent`, `bg-destructive`, `bg-muted-destructive`, `bg-success`, `bg-muted-success`, `ring-ring`, etc.
-- Or use the underlying CSS vars directly: `var(--primary)`, `var(--text-body)`, `var(--border)`, etc.
-- Raw Tailwind palette colors (`bg-blue-500`, `text-red-600`, etc.) are allowed, but whenever you use one outside the theme tokens, leave a brief inline note so devs reviewing can decide whether to promote it into the theme.
-- NEVER hardcode hex colors in components or templates. Hex literals only belong in `app.preset.ts` and `styles.css`.
-- For status UI use `destructive` / `muted-destructive` / `success` / `muted-success` tokens — do not invent new red/green shades.
+- Use the Tailwind tokens: `bg-primary`, `text-primary-foreground`, `bg-secondary`, `bg-muted`, `text-muted-foreground`, `text-heading`, `text-body`, `border-border`, `bg-background`, `bg-card`, `bg-destructive`, `bg-success`, `ring-ring`, `bg-sidebar`, etc.
+- Or the underlying vars: `var(--primary)`, `var(--text-body)`, `var(--border)`.
+- **NEVER hardcode hex in components or templates.** Hex lives in `styles.css` only.
+- Raw Tailwind palette colors (`bg-blue-500`) are allowed, but leave a one-line comment saying why, so a reviewer can decide whether to promote it into the theme.
+- Status UI uses `destructive` / `muted-destructive` / `success` / `muted-success`. Do not invent new red or green shades.
 
-## PrimeNG
+### Semantic trap
 
-- Rely on `AppPreset` semantic tokens — do not override PrimeNG component colors inline.
-- If a new shade is needed, extend `app.preset.ts` (semantic block) rather than patching components.
+`--secondary` and `--accent` are **low-contrast surfaces** in this contract: secondary
+buttons, hovered rows, highlighted menu items. They are not "the brand's second color".
+The vivid brand cyan lives in `--ring` (focus). If you want a loud accent fill, add a new
+token rather than overloading `--accent`, or every helm hover state changes with it.
+
+## Light scheme only
+
+This project does not support dark mode. There is no `.dark` block and `color-scheme` is
+`light`. Vendored helm sources still carry `dark:` variants from upstream; those never
+activate. Leave them alone, do not spend effort stripping them.
 
 ## Typography
 
-- Headings (`h1`–`h6`): `font-heading` (Poppins) — already applied globally in `styles.css`, do not re-import or override.
-- Body, buttons, inputs: `font-body` (Work Sans) — already global.
-- Do NOT import additional Google Fonts or font families.
+- Headings h1 through h6 use `font-heading` (Poppins). Applied globally, do not re-apply or override.
+- Body, buttons and inputs use `font-body` (Work Sans). Also global. `--font-sans` is aliased to it so Tailwind and helm defaults match.
+- Fonts load from Google Fonts via `<link>` in `src/index.html`, with preconnect. Do NOT add an `@import url()` for fonts in CSS, and do NOT add more font families.
 
-## Radius & spacing
+## Radius and spacing
 
-- Border radius: use `var(--radius)` or `rounded-base`. Avoid arbitrary `rounded-lg` / `rounded-xl` unless intentional.
-- Spacing: Tailwind defaults are fine — no custom scale.
+- Border radius: `rounded-base` (which is `var(--radius)`). Helm components additionally use `--radius-sm/md/lg/xl`, derived automatically from `--radius` by the spartan preset. Change `--radius` once and the whole scale follows.
+- Spacing: Tailwind defaults. No custom scale.
+
+## Adding a spartan component
+
+`pnpm ng g @spartan-ng/cli:ui` vendors it into `src/app/shared/ui/`. Those files are
+yours. Restyle them in place rather than wrapping them in override CSS. Import via
+`@ui/<name>`.

@@ -2,10 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-header',
-  imports: [],
   templateUrl: './header.html',
-  styleUrl: './header.css',
+  host: { class: 'sticky top-0 z-20' },
 })
-export class Header {
-
-}
+export class Header {}
